@@ -1,5 +1,6 @@
-# webusb_ch340_terminal-
-webusb ch340  terminal  work on android brauser
+# webusb_ch340_terminal
+webusb ch340 ft232and etc. terminal  work on android brauser
+default 57600
 
 репозиторий состоит из двух файлов которые были скопированы со страницы по этой ссылке:
 https://stackoverflow.com/questions/64929987/webusb-api-working-but-the-data-received-arent-decoded-properly
