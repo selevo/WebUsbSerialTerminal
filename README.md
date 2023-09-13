@@ -1,4 +1,4 @@
-# webusb_ch340_terminal
+# webusb serial terminal
 webusb ch340 ft232and etc. terminal  work on android brauser
 default 57600
 
