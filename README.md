@@ -11,6 +11,9 @@ https://stackoverflow.com/questions/64929987/webusb-api-working-but-the-data-rec
 также не работает кнопка disconnect.
 
 если кто-то доработает то я буду рад, и все остальные тоже.
+А вот более законченный проект того же автора: 
+https://grovkillen.com/webusb/
+Он имеет также некоторые проблемы если использовать смартфон, происходит перезагрузка смартфона иногда в тот момент когда вытаскиваешь устройство из смартфона. автор сообщил что это глюк хром браузера.
 ![Screenshot_20230913_040225_com android chrome](https://github.com/selevo/WebUsbSerialTerminal/assets/13694921/1d808fe0-d964-4601-b5a4-04428f0c6b25)
 
 about://usb-internals
