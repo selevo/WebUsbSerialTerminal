@@ -2,7 +2,8 @@
 webusb ch340 ft232and etc. terminal  work on android brauser
 default 57600
 _____________
-webapi WEBusb serial - will work in android 
+webapi WEBusb serial - will work in android.
+
 webapi WebSerial - will not work on android
 This  differents projekts
 _____________
