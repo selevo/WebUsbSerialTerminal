@@ -1,17 +1,18 @@
 # webusb serial terminal
 https://selevo.github.io/WebUsbSerialTerminal/
 
-webusb ch340 ft232and etc. terminal  work on android brauser
+webusb ch340 ft232and etc. terminal  work on android brauser.
 default 57600
 _____________
 webapi WEBusb serial - will work in android.
 
 webapi WebSerial - will not work on android
 
-This  differents projects
+this is a very important difference between these two webapi
 _____________
 репозиторий состоит из двух файлов которые были скопированы со страницы по этой ссылке:
 https://stackoverflow.com/questions/64929987/webusb-api-working-but-the-data-received-arent-decoded-properly
+и оформленные в виде одной веб-страницы для примера.
 
 Спасибо автору, он проделал большую работу терминал работает на смартфоне на базе Android. 
 у меня возникли некоторые проблемы с отключением устройства поэтому новый экземпляр страницы может не запуститься без переподключения usb-com свистульки.
