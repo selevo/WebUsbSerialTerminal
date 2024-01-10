@@ -1,4 +1,5 @@
 # webusb serial terminal
+https://selevo.github.io/WebUsbSerialTerminal/
 
 webusb ch340 ft232and etc. terminal  work on android brauser
 default 57600
