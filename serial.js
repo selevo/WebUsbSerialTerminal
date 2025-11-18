@@ -25,7 +25,7 @@
 
     const config =  {
         "DEBUG"                             : true,
-        "DEFAULT_BAUD_RATE"                 :  57600,
+        "DEFAULT_BAUD_RATE"                 :  9600,
         "BAUD_RATES"                        :  [600,1200,2400,4800,9600,14400,19200,38400,57600,115200,230400], // highest is 300 0000 limited by the BAUD_RATE_MAX_BPS
         //CH34x --> https://github.com/torvalds/linux/blob/master/drivers/usb/serial/ch341.c <-- we have used the linux driver and made into a webUSB driver
         // plus -->  https://github.com/felHR85/UsbSerial/tree/master/usbserial/src/main/java/com/felhr/usbserial  <--
@@ -381,3 +381,4 @@
             send(source);
         }
     }
+
