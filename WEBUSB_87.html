@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>WebUSB CH340 Терминал</title>
+    <style>
+        body { font-family: sans-serif; padding: 20px; }
+        #output { width: 100%; resize: none; border: 1px solid #ccc; padding: 10px; box-sizing: border-box; }
+        #input-container { margin-top: 10px; display: flex; }
+        #input-text { flex-grow: 1; padding: 8px; margin-right: 10px; border: 1px solid #ccc; }
+        button { padding: 8px 15px; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <h1>WebUSB CH340 UART Терминал 🛠️</h1>
+    <p>⚠️ **ВАЖНО:** Этот код работает только по **HTTPS** или на `localhost` и требует **ручного подтверждения** доступа к устройству в браузере.</p>
+
+    <button id="connect-button">Подключиться к CH340</button>
+    
+    <h3>Вывод терминала:</h3>
+    <textarea id="output" rows="15" readonly></textarea>
+    
+    <div id="input-container">
+        <input type="text" id="input-text" placeholder="Введите команду (Enter для отправки)...">
+        <button id="send-button" disabled>Отправить</button>
+    </div>
+
+    <script>
+	
+	// --- КОНСТАНТЫ ДЛЯ CH340 ---
+const USB_VENDOR_ID = 0x1A86; 
+const USB_PRODUCT_ID = 0x7523; 
+const INTERFACE_NUMBER = 0; 
+const ENDPOINT_IN = 2;    // Конечная точка для приема (от CH340 к ПК)
+const ENDPOINT_OUT = 2;   // Конечная точка для передачи (от ПК к CH340)
+const PACKET_SIZE = 64; 
+
+// --- ПЕРЕМЕННЫЕ СОСТОЯНИЯ ---
+let device;
+let isConnected = false;
+
+// --- DOM ЭЛЕМЕНТЫ ---
+const connectButton = document.getElementById('connect-button');
+const sendButton = document.getElementById('send-button');
+const outputArea = document.getElementById('output');
+const inputText = document.getElementById('input-text');
+
+// --- ИНИЦИАЛИЗАЦИЯ СОБЫТИЙ ---
+connectButton.addEventListener('click', connect);
+sendButton.addEventListener('click', sendData);
+inputText.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && !sendButton.disabled) {
+        sendData();
+    }
+});
+
+// ----------------------------------------------------
+// ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ
+// ----------------------------------------------------
+
+function log(message) {
+    const timestamp = new Date().toLocaleTimeString();
+    outputArea.value += `[${timestamp}] ${message}\n`;
+    outputArea.scrollTop = outputArea.scrollHeight;
+}
+
+function updateConnectionStatus(status) {
+    isConnected = status;
+    connectButton.textContent = status ? 'Подключено' : 'Подключиться к CH340';
+    connectButton.disabled = status;
+    sendButton.disabled = !status;
+}
+
+// ----------------------------------------------------
+// НАСТРОЙКА CH340 (НИЗКОУРОВНЕВЫЕ КОМАНДЫ)
+// ----------------------------------------------------
+
+async function configureCH340() {
+    // Внимание: Эти команды специфичны для чипа CH340.
+    // Они имитируют инициализацию, которую выполняет драйвер.
+    
+    // 1. Инициализация (Get Version)
+    log('Настройка: Шаг 1 (Инициализация)...');
+    await device.controlTransferOut({
+        requestType: 'vendor',
+        recipient: 'device',
+        request: 0xA1,
+        value: 0x1312,
+        index: 0x0000
+    });
+
+    // 2. Настройка порта
+    log('Настройка: Шаг 2 (Порт)...');
+    await device.controlTransferOut({
+        requestType: 'vendor',
+        recipient: 'device',
+        request: 0x9A,
+        value: 0x2518,
+        index: 0x0050
+    });
+
+    // 3. Установка скорости (Baud Rate 9600)
+    // Эти значения сложны, зависят от конкретной скорости и регистра. 
+    // Для 9600 бод часто используются: Value: 0x1A20, Index: 0x00C0
+    log('Настройка: Шаг 3 (Скорость 9600 бод)...');
+    await device.controlTransferOut({
+        requestType: 'vendor',
+        recipient: 'device',
+        request: 0x9A,
+        value: 0x1A20, 
+        index: 0x00C0
+    });
+    
+    log('CH340 настроен (базовый бод-рейт 9600).');
+}
+
+// ----------------------------------------------------
+// ПОДКЛЮЧЕНИЕ
+// ----------------------------------------------------
+
+async function connect() {
+    try {
+        // 1. Запрос устройства
+        device = await navigator.usb.requestDevice({
+            filters: [{ vendorId: USB_VENDOR_ID, productId: USB_PRODUCT_ID }]
+        });
+        
+        log(`Устройство найдено: ${device.productName} (VID: 0x${USB_VENDOR_ID.toString(16)}, PID: 0x${USB_PRODUCT_ID.toString(16)})`);
+
+        // 2. Открытие, конфигурация и захват интерфейса
+        await device.open();
+        await device.selectConfiguration(1);
+        await device.claimInterface(INTERFACE_NUMBER);
+        log(`Интерфейс ${INTERFACE_NUMBER} запрошен.`);
+
+        // 3. Настройка CH340
+        await configureCH340(); 
+
+        // 4. Обновление статуса и запуск чтения
+        updateConnectionStatus(true);
+        readDataLoop();
+    } catch (error) {
+        log(`❌ Ошибка подключения: ${error.message}`);
+        updateConnectionStatus(false);
+    }
+}
+
+// ----------------------------------------------------
+// ОТПРАВКА ДАННЫХ
+// ----------------------------------------------------
+
+async function sendData() {
+    if (!isConnected || !device) {
+        log('Ошибка: Устройство не подключено.');
+        return;
+    }
+
+    const text = inputText.value + '\n'; // Добавляем перевод строки
+    const encoder = new TextEncoder();
+    const data = encoder.encode(text);
+
+    try {
+        // transferOut - для передачи данных
+        const result = await device.transferOut(ENDPOINT_OUT, data);
+        log(`> Отправлено: "${text.trim()}" (${result.bytesTransferred} байт)`);
+        inputText.value = '';
+    } catch (error) {
+        log(`❌ Ошибка при отправке: ${error.message}`);
+    }
+}
+
+// ----------------------------------------------------
+// ПОЛУЧЕНИЕ ДАННЫХ (ЦИКЛ)
+// ----------------------------------------------------
+
+async function readDataLoop() {
+    if (!isConnected || !device) return;
+
+    try {
+        while (isConnected) {
+            // transferIn - для получения данных с устройства
+            const result = await device.transferIn(ENDPOINT_IN, PACKET_SIZE);
+            
+            if (result.status === 'ok' && result.data && result.data.byteLength > 0) {
+                const decoder = new TextDecoder();
+                const text = decoder.decode(result.data);
+                log(text.trim());
+            } else if (result.status === 'stalled') {
+                // Endpoint был застопорен, нужно сбросить
+                await device.clearHalt('in', ENDPOINT_IN);
+            }
+        }
+    } catch (error) {
+        if (isConnected) { 
+            log(`❌ Критическая ошибка чтения: ${error.message}`);
+        }
+    } finally {
+        // Очистка при разрыве соединения
+        if (isConnected) {
+            disconnect();
+        }
+    }
+}
+
+// ----------------------------------------------------
+// ОТКЛЮЧЕНИЕ
+// ----------------------------------------------------
+
+async function disconnect() {
+    if (device) {
+        try {
+            // Освобождение интерфейса и закрытие устройства
+            await device.releaseInterface(INTERFACE_NUMBER);
+            await device.close();
+            log('Соединение закрыто.');
+        } catch (error) {
+            log(`❌ Ошибка при отключении: ${error.message}`);
+        }
+    }
+    updateConnectionStatus(false);
+}
+	</script>
+</body>
+</html>
