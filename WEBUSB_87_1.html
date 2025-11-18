@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>WebUSB CH340 Терминал (Один Файл)</title>
+    <style>
+        body { font-family: sans-serif; padding: 20px; background-color: #f4f4f9; }
+        h1 { color: #333; }
+        p { color: #555; }
+        #output { 
+            width: 100%; 
+            height: 300px; 
+            resize: none; 
+            border: 1px solid #2c3e50; 
+            padding: 10px; 
+            box-sizing: border-box; 
+            background-color: #ecf0f1; 
+            font-family: monospace;
+            font-size: 14px;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+        #input-container { margin-top: 10px; display: flex; }
+        #input-text { 
+            flex-grow: 1; 
+            padding: 8px; 
+            margin-right: 10px; 
+            border: 1px solid #ccc; 
+            font-size: 14px;
+        }
+        button { 
+            padding: 8px 15px; 
+            cursor: pointer; 
+            border: none;
+            background-color: #3498db;
+            color: white;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+        button:hover:not(:disabled) {
+            background-color: #2980b9;
+        }
+        button:disabled {
+            background-color: #bdc3c7;
+            cursor: not-allowed;
+        }
+        .status-message {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 4px;
+        }
+        .error {
+            background-color: #f39c12;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <h1>WebUSB CH340 UART Терминал 🛠️</h1>
+    <p>⚠️ **ВАЖНО:** Доступ к WebUSB возможен только по **HTTPS** или на **http://localhost**. Используйте Chrome/Edge.</p>
+
+    <button id="connect-button">Подключиться к CH340</button>
+    
+    <h3>Вывод терминала:</h3>
+    <textarea id="output" readonly></textarea>
+    
+    <div id="input-container">
+        <input type="text" id="input-text" placeholder="Введите команду (Enter для отправки)...">
+        <button id="send-button" disabled>Отправить</button>
+    </div>
+
+    <script>
+// ====================================================
+// JAVASCRIPT WEBUSB CH340 TERMINAL
+// ====================================================
+
+// --- КОНСТАНТЫ ДЛЯ CH340 ---
+const USB_VENDOR_ID = 0x1A86; 
+const USB_PRODUCT_ID = 0x7523; 
+const INTERFACE_NUMBER = 0; 
+const ENDPOINT_IN = 2;    
+const ENDPOINT_OUT = 2;   
+const PACKET_SIZE = 64; 
+
+// --- ПЕРЕМЕННЫЕ СОСТОЯНИЯ ---
+let device;
+let isConnected = false;
+
+// --- DOM ЭЛЕМЕНТЫ ---
+const connectButton =
