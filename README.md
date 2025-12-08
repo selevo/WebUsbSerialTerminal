@@ -1,7 +1,7 @@
 # webusb serial terminal
 https://selevo.github.io/WebUsbSerialTerminal/
 
-webusb ch340 ft232and etc. terminal  work on android brauser.
+webusb ch340 ft232and etc. terminal  work on android browser.
 default 57600
 _____________
 webapi WEBusb serial - will work in android.
@@ -23,6 +23,13 @@ https://stackoverflow.com/questions/64929987/webusb-api-working-but-the-data-rec
 А вот более законченный проект того же автора: 
 https://grovkillen.com/webusb/
 Он имеет также некоторые проблемы если использовать смартфон, происходит перезагрузка смартфона иногда в тот момент когда вытаскиваешь устройство из смартфона. автор сообщил что это глюк хром браузера.
+
+English ^^
+The repository consists of two files that were copied from the page at this link: https://stackoverflow.com/questions/64929987/webusb-api-working-but-the-data-received-arent-decoded-properly and formatted as a single web page for example.
+
+Thanks to the author, he did a great job. The terminal works on an Android smartphone. I had some issues disconnecting the device, so a new page might not launch without reconnecting the USB-COM device. That is, the browser doesn't automatically disconnect the device if the page is closed, and the disconnect button doesn't work.
+
+If someone improves it, I'll be happy, and so will everyone else. Here's a more complete project by the same author: ~~https://grovkillen.com/webusb/~~ It also has some issues when using a smartphone; the smartphone sometimes reboots when you remove the device from the smartphone. The author reported that this is a Chrome browser glitch. 
 ![Screenshot_20230913_040225_com android chrome](https://github.com/selevo/WebUsbSerialTerminal/assets/13694921/1d808fe0-d964-4601-b5a4-04428f0c6b25)
 
 about://usb-internals
