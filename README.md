@@ -29,6 +29,8 @@ https://grovkillen.com/webusb/
 Мозможно потребудется  подменя имени  с помощью https://zadig.akeo.ie/
 Так же  смотрите развитие проекта  автора (grovkillen) https://github.com/letscontrolit/ESPEasy?tab=readme-ov-file
 Там  были  исключены   все  WEB USB API и   теперь используются WEBserial API ( поэтому будет работать только на компьютере и не  будет работать  в браузере на android)
+
+
 English ^^
 The repository consists of two files that were copied from the page at this link: https://stackoverflow.com/questions/64929987/webusb-api-working-but-the-data-received-arent-decoded-properly and formatted as a single web page for example.
 
