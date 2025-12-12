@@ -44,7 +44,8 @@ If someone improves it, I'll be happy, and so will everyone else. Here's a more 
 
 Currently, the code doesn't work everywhere due to changes in the browser's handling of USB devices.
 You may need to change the name using https://zadig.akeo.ie/
-Also see the author's (grovkillen) project development: https://github.com/letscontrolit/ESPEasy?tab=readme-ov-file
+Also see the author's (grovkillen) project development:
+https://github.com/letscontrolit/ESPEasy?tab=readme-ov-file
 All WEB USB APIs have been removed and the WEBserial API is now used (so it will only work on a computer and will not work in an Android browser).)
 about://usb-internals
 ![Screenshot_20230913_071718](https://github.com/selevo/WebUsbSerialTerminal/assets/13694921/da16214d-5a48-4a8d-9ece-db436bd7a682)
